@@ -1,0 +1,27 @@
+.product-slider {
+    text-align: center;
+    color     : #fff;
+    margin    : 0 40px;
+
+    .link {
+        color: #fff;
+
+        .product-card {
+            .card-item {
+                background-color: #323232;
+                border-radius   : 20px;
+                margin          : 20px;
+                padding         : 30px 0;
+
+                .name {
+                    font-weight: 500;
+                }
+
+                .price {
+                    font-size  : 20px;
+                    font-weight: bold;
+                }
+            }
+        }
+    }
+}
