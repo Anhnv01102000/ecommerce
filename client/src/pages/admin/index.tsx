@@ -1,11 +1,16 @@
+import Auth from "../../auth";
 import Layouts from "../../components/layouts/admin";
-import DashboardComponent from "../../components/pages/admin/admin";
+import AdminComponent from "../../components/pages/admin/admin";
 
-const AdminDashboardPage = () => {
-    return <Layouts>
-        <DashboardComponent />
-    </Layouts>
+const AdminPage = () => {
+    return (
+        <Auth>
+            <Layouts>
+                <AdminComponent />
+            </Layouts>
+        </Auth>
+    )
 }
 
 
-export default AdminDashboardPage;
+export default AdminPage;

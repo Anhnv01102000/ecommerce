@@ -80,18 +80,18 @@ const TableProduct: React.FC = () => {
     }
 
     const onFinish = async (values: any) => {
-        console.log(values);
+        // console.log(values);
 
         const dataForm = new FormData()
         dataForm.append("name", values.name)
         dataForm.append("price", values.price)
         dataForm.append("description", values.description)
         dataForm.append("category", values.category)
-        dataForm.append("images", values.images.map((el: any) => el.originFileObj))
+        dataForm.append("images", values.images[0].originFileObj)
 
-        console.log(typeof (values.images[0].originFileObj));
+        // console.log(typeof (values.images[0].originFileObj));
 
-        console.log(typeof (values.images.map((el: any) => el.originFileObj)));
+        // console.log(typeof (values.images.map((el: any) => el.originFileObj)));
 
 
         if (status === STATUS.CREATE) {
@@ -101,6 +101,7 @@ const TableProduct: React.FC = () => {
                 fetchProducts();
             }
         } else {
+            console.log(JSON.stringify(Object.fromEntries(dataForm)));
             const response = await editProduct(values._id, dataForm)
             if (response.status === 200) {
                 fetchProducts();
@@ -153,7 +154,7 @@ const TableProduct: React.FC = () => {
             dataIndex: "images",
             render: images => <Image src={images[0]} preview={true} />,
             key: 'images',
-            width: 220
+            width: 120
         },
         {
             title: 'Giá',
@@ -219,6 +220,17 @@ const TableProduct: React.FC = () => {
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
                 >
+                    {
+                        !(status === STATUS.CREATE) && (
+                            <Form.Item
+                                label="ID"
+                                name="_id"
+                                rules={[{ required: true, message: 'Please input your account ID!' }]}
+                            >
+                                <Input disabled={true} />
+                            </Form.Item>
+                        )
+                    }
                     <Form.Item name="name" label="Tên sản phẩm" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>

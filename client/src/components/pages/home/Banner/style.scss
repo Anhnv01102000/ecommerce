@@ -1,0 +1,31 @@
+.banner {
+    margin: 30px;
+
+    .banner-item {
+        margin          : 10px 30px;
+        background-color: #323232;
+        border-radius   : 20px;
+        display         : flex;
+        align-items     : center;
+        justify-content : center;
+
+        .banner-img {
+            padding: 10px 0;
+        }
+
+        p {
+            text-align : center;
+            font-size  : 18px;
+            font-weight: bold;
+        }
+    }
+
+    .banner-item:hover {
+        box-shadow: -4px -4px 8px rgba(134, 134, 134, .2), 4px 4px 8px rgba(28, 28, 28, .4);
+    }
+
+    .banner-item:hover img {
+        scale     : 1.1;
+        transition: 0.5s;
+    }
+}

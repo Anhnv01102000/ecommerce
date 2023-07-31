@@ -5,10 +5,10 @@ const jwt = require('jsonwebtoken')
 const sendMail = require("../ultils/sendMail")
 const crypto = require('crypto')
 
-const addNewUser = asyncHandler(async (req, res) => {
-    const { email, password, name, address, mobile, role } = req.body
+const Register = asyncHandler(async (req, res) => {
+    const { email, password, name, address, mobile } = req.body
     console.log(req.body);
-    if (!email || !password || !name || !address || !mobile || !role) {
+    if (!email || !password || !name || !address || !mobile) {
         return res.status(400).json({
             success: false,
             message: "Mising inputs"
@@ -40,18 +40,17 @@ const login = asyncHandler(async (req, res) => {
     const response = await User.findOne({ email })
     if (response && await response.isCorrectPassword(password)) {
         // Tách password và role ra khỏi response
-        const { password, role, refreshToken, ...userData } = response.toObject()
+        const { password, role, ...userData } = response.toObject()
         // Tạo access token
-        const accessToken = gennerateAccessToken(response._id, role)
+        const accessToken = gennerateAccessToken(response._id)
         // Tạo refresh token
-        const newRefreshToken = gennerateRefreshToken(response._id)
+        const refreshToken = gennerateRefreshToken(response._id)
         // Lưu refresh token vào db
-        await User.findByIdAndUpdate(response._id, { newRefreshToken }, { new: true })
-        // Lưu refresh token vào cookie
-        res.cookie('refreshToken', newRefreshToken, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 })
+        await User.findByIdAndUpdate(response._id, { refreshToken }, { new: true })
         return res.status(200).json({
             success: true,
             accessToken,
+            refreshToken,
             userData
         })
     } else {
@@ -69,34 +68,27 @@ const getCurrent = asyncHandler(async (req, res) => {
 })
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-    // Lấy token từ cookie
-    const cookie = req.cookies
-    // Check xem có token hay không
-    if (!cookie && !cookie.refreshToken) {
-        throw new Error('No refresh token in cookies')
-    } else {
-        // Check token có hợp lệ hay không
-        const rs = await jwt.verify(cookie.refreshToken, process.env.JWT_SECRET)
-        const response = await User.findOne({ _id: rs.id, refreshToken: cookie.refreshToken })
-        return res.status(200).json({
-            success: response ? true : false,
-            newAccessToken: response ? gennerateAccessToken(response._id, response.role) : "Refresh Token not matched"
-        })
-    }
+    const { refreshToken } = req.body
+    // console.log(refreshToken);
+    // Check token có hợp lệ hay không
+    const rs = await jwt.verify(refreshToken, process.env.JWT_SECRET)
+    // console.log(rs);
+    const response = await User.findOne({ _id: rs.id, refreshToken })
+    // console.log(response);
+    return res.status(200).json({
+        success: response ? true : false,
+        newAccessToken: response ? gennerateAccessToken(response._id, response.role) : "Refresh Token not matched"
+    })
+
 })
 
 const logout = asyncHandler(async (req, res) => {
-    const cookie = req.cookies
-    if (!cookie || !cookie.refreshToken) {
-        throw new Error("No fresh token in cookies")
+    const { refreshToken } = req.body
+    if (!refreshToken) {
+        throw new Error("No fresh token")
     } else {
         // Xóa refresh token ở db
-        await User.findOneAndUpdate({ refreshToken: cookie.refreshToken }, { refreshToken: "" }, { new: true })
-        // Xóa refresh token ở cookie
-        res.clearCookie("refreshToken", {
-            httpOnly: true,
-            secure: true
-        })
+        await User.findOneAndUpdate({ refreshToken }, { refreshToken: "" }, { new: true })
         return res.status(200).json({
             success: true,
             message: "Logout is done"
@@ -265,7 +257,7 @@ const updateUser = asyncHandler(async (req, res) => {
 //     }
 // })
 module.exports = {
-    addNewUser,
+    Register,
     login,
     getCurrent,
     refreshAccessToken,
@@ -275,5 +267,4 @@ module.exports = {
     getUsers,
     deleteUser,
     updateUser,
-    addCart
 }

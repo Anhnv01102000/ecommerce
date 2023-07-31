@@ -1,54 +1,51 @@
-import { Carousel, Image } from 'antd';
-import Slider from 'react-slick';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Carousel, Image, Input } from 'antd';
 import { AppleOutlined } from "@ant-design/icons"
 import "./style.scss"
+import BannerComponent from '../Banner';
+import SliderComponent from '../SliderComponent';
+import { getProduct } from '../../../../apis/apiProduct';
+import { getCategory } from '../../../../apis/apiCategory';
 
-// import { getProduct } from '../../../../apis/apiProduct';
-// import { getCategory } from '../../../../apis/apiCategory';
 
-const settings = {
-    dots: false,
-    infinite: true,
-    speed: 200,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    responsive: [
-        {
-            breakpoint: 1024,
-            settings: {
-                slidesToShow: 3,
-                slidesToScroll: 3,
-                infinite: true,
-                dots: true
-            }
-        },
-        {
-            breakpoint: 992,
-            settings: {
-                slidesToShow: 2,
-                slidesToScroll: 2,
-                initialSlide: 2
-            }
-        },
-        {
-            breakpoint: 576,
-            settings: {
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                arrows: false
-            }
-        }
-    ]
-};
+const { Search } = Input;
 
 
 const HomeComponent = () => {
+    const [product, setProduct] = useState<any[]>([])
+    const [category, setCategory] = useState<any[]>([])
+
+    useEffect(() => {
+        fetchProducts()
+        fetchCategories()
+    }, [])
+
+    const fetchProducts = async () => {
+        let res = await getProduct()
+        if (res.status === 200) {
+            setProduct(res.data.products)
+        }
+    }
+
+    const fetchCategories = async () => {
+        let res = await getCategory()
+        if (res.status === 200) {
+            setCategory(res.data.categories)
+        }
+    }
+
+    const categoryIphone = category.find(el => el.name === "iPhone")?._id
+    const productIphone = product.filter(el => el.category === categoryIphone)
+
+    const categoryIpad = category.find(el => el.name === "iPad")?._id
+    const productIpad = product.filter(el => el.category === categoryIpad)
+
+    const categoryWatch = category.find(el => el.name === "Watch")?._id
+    const productWatch = product.filter(el => el.category === categoryWatch)
+
     return (
         <>
-            <Carousel autoplay dots={false} >
+            <Carousel autoplay dots={false} infinite speed={500} >
                 <div>
                     <Image
                         src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_1920x533/https://cdn.tgdd.vn/2023/07/banner/GTN-2880-800-1920x533.png'
@@ -75,300 +72,34 @@ const HomeComponent = () => {
                 </div>
             </Carousel >
 
-            <div className='product-slider'>
-                <h2><AppleOutlined style={{ fontSize: "30px" }} /> iPhone</h2>
-                <Slider {...settings}>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                </Slider >
-            </div >
-            <div className='product-slider'>
-                <h2><AppleOutlined style={{ fontSize: "30px" }} /> Mac</h2>
-                <Slider {...settings}>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                </Slider >
-            </div >
-            <div className='product-slider'>
-                <h2><AppleOutlined style={{ fontSize: "30px" }} /> iPad</h2>
-                <Slider {...settings}>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                </Slider >
-            </div >
-            <div className='product-slider'>
-                <h2><AppleOutlined style={{ fontSize: "30px" }} /> Watch</h2>
-                <Slider {...settings}>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link className='link' to="/">
-                        <div className='product-card'>
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src='https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_300x300/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone-14-pro-max-black-thumbtz-650x650.png'
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                </Slider >
-            </div >
+            <BannerComponent />
 
+            <div>
+                <div className='product-slider'>
+                    <h2><AppleOutlined style={{ fontSize: "30px" }} /> iPhone</h2>
+                    <SliderComponent data={productIphone} />
+                </div >
+                <div className='product-slider'>
+                    <h2><AppleOutlined style={{ fontSize: "30px" }} /> iPad</h2>
+                    <SliderComponent data={productIpad} />
+                </div >
+                <div className='product-slider'>
+                    <h2><AppleOutlined style={{ fontSize: "30px" }} /> Watch</h2>
+                    <SliderComponent data={productWatch} />
+                </div >
+            </div>
 
+            <div className='newletter'>
+                <h5>Đăng ký nhận tin từ TopZone</h5>
+                <p>Thông tin sản phẩm mới nhất và chương trình khuyến mãi</p>
+                <Search
+                    className='search'
+                    placeholder="Email của bạn"
+                    allowClear
+                    enterButton="Đăng kí"
+                    size="middle"
+                />
+            </div>
         </>
     )
 }

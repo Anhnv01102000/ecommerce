@@ -1,0 +1,119 @@
+.product-detail {
+    margin: 30px;
+
+    .detail {
+        .slider-image {
+            padding: 0 30px;
+
+            .image-preview {
+                display        : flex;
+                justify-content: center;
+                align-items    : center;
+
+                img {
+                    width        : 100%;
+                    border-radius: 10px;
+                }
+            }
+
+            .slider-item {
+                margin: 20px 10px;
+
+                .image {
+                    width        : 110px;
+                    border-radius: 10px;
+                }
+            }
+
+        }
+
+        .content {
+            margin: 0 20px;
+
+            .information {
+                color: #fff;
+
+                h3 {
+                    font-size: 32px;
+                    margin   : 0 0 15px 0;
+                }
+
+                span {
+                    font-size: 16px;
+                }
+
+                p {
+                    font-size  : 26px;
+                    font-weight: bold;
+                }
+
+                .promotion {
+                    border-radius   : 12px;
+                    background-color: #2f3033;
+                    padding         : 20px 15px;
+                    margin-bottom   : 20px;
+
+                    h5 {
+                        font-size: 18px;
+                        margin   : 0 0 10px 20px;
+                    }
+
+                    span {
+                        font-size: 14px;
+                        margin   : 0 0 10px 20px;
+                    }
+
+                    ul {
+                        li {
+                            font-size  : 14px;
+                            line-height: 30px;
+                        }
+                    }
+                }
+            }
+
+            .buy {
+                .buy-now {
+                    .link-buy-now {
+                        button {
+                            width        : 100%;
+                            font-size    : 20px;
+                            color        : #fff;
+                            font-weight  : bold;
+                            height       : 60px;
+                            border-radius: 12px;
+                        }
+                    }
+                }
+
+                .installment {
+                    margin-top     : 15px;
+                    display        : flex;
+                    align-items    : center;
+                    justify-content: space-between;
+
+                    .link-installment {
+                        button {
+                            width           : 275px;
+                            font-size       : 16px;
+                            color           : #101010;
+                            background-color: #fff;
+                            font-weight     : bold;
+                            height          : 60px;
+                            border-radius   : 12px;
+
+                            p {
+                                font-weight: normal;
+                                margin     : 0;
+                                font-size  : 14px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+    }
+
+}

@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import ListProductComponent from "../ListProductComponent"
-import { Link } from 'react-router-dom';
-import { Col, Row, Image } from 'antd';
 import "./style.scss"
 import { getProduct } from '../../../../apis/apiProduct';
 import { getCategory } from '../../../../apis/apiCategory';
 
 const IPhoneComponent = () => {
-    const [data, setData] = useState([])
-    const [category, setCategory] = useState([])
+    const [product, setProduct] = useState<any[]>([])
+    const [category, setCategory] = useState<any[]>([])
 
     useEffect(() => {
         fetchProducts()
@@ -18,7 +16,7 @@ const IPhoneComponent = () => {
     const fetchProducts = async () => {
         let res = await getProduct()
         if (res.status === 200) {
-            setData(res.data.products)
+            setProduct(res.data.products)
         }
     }
 
@@ -30,35 +28,13 @@ const IPhoneComponent = () => {
 
     }
 
-    console.log(data);
-    console.log(category);
-
+    const categoryIphone = category.find(el => el.name === "iPhone")?._id
+    const productIphone = product.filter(el => el.category === categoryIphone)
 
     return (
         <div className='main-content'>
             <h3>iPhone</h3>
-            {/* <ListProductComponent data={data} /> */}
-            <Row>
-                {data.map((el: any) => (
-                    <Col xs={12} lg={6} >
-                        <Link className='link' to="/">
-                            <div className='card-item'>
-                                <Image
-                                    className='image'
-                                    src={el.images[0]}
-                                    preview={false}
-                                />
-                                <div>
-                                    <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
-                                    <div className='price'>
-                                        <span>26.690.000</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </Link>
-                    </Col>
-                ))}
-            </Row>
+            <ListProductComponent data={productIphone} />
         </div>
     )
 }

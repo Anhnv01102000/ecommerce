@@ -40,15 +40,18 @@ const ContentComponent = ({ children }: { children: ReactNode }) => {
         token: { colorBgContainer },
     } = theme.useToken();
 
-    const location = useLocation();
+    const { pathname } = useLocation();
     const [selectedKeys, setSelectedKeys] = useState("/");
 
     useEffect(() => {
-        const pathName = location.pathname;
-        setSelectedKeys(pathName);
-    }, [location.pathname]);
+        setSelectedKeys(pathname);
+    }, [pathname]);
 
     const navigate = useNavigate();
+
+    // const listBreadcrumb = pathname.split('/')
+    // console.log(listBreadcrumb);
+
 
     return (
         <Layout>
@@ -58,6 +61,8 @@ const ContentComponent = ({ children }: { children: ReactNode }) => {
                     <Breadcrumb.Item>List</Breadcrumb.Item>
                     <Breadcrumb.Item>App</Breadcrumb.Item>
                 </Breadcrumb>
+
+                {/* <Breadcrumb items={listBreadcrumb.map(el => ({ path: `/${el}`, breadcrumbName: el }))} /> */}
                 <Layout style={{ background: colorBgContainer }}>
                     <Sider style={{ background: colorBgContainer }} width={200}>
                         <Menu

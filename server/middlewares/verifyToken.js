@@ -25,6 +25,5 @@ const verifyAccessToken = asyncHandler(async (req, res, next) => {
 })
 
 module.exports = {
-    verifyAccessToken,
-    isAdmin
+    verifyAccessToken
 }

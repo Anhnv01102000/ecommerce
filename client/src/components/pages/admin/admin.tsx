@@ -6,7 +6,7 @@ import {
 } from "@ant-design/icons";
 import { Card, Space, Statistic, Typography } from "antd";
 
-function Dashboard() {
+const AdminComponent = () => {
     return (
         <Space size={20} direction="vertical">
             <Typography.Title level={3}>Dashboard</Typography.Title>
@@ -72,4 +72,4 @@ function Dashboard() {
     );
 }
 
-export default Dashboard;
+export default AdminComponent;

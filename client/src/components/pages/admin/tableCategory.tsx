@@ -55,6 +55,8 @@ const TableCategory: React.FC = () => {
 
         if (status === STATUS.CREATE) {
             const response = await createNewCategory(dataForm)
+            console.log(response);
+
             if (response.status === 200) {
                 fetchUser();
             }
@@ -162,9 +164,17 @@ const TableCategory: React.FC = () => {
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
                 >
-                    <Form.Item name="_id" label="ID sản phẩm">
-                        <Input disabled />
-                    </Form.Item>
+                    {
+                        !(status === STATUS.CREATE) && (
+                            <Form.Item
+                                label="ID"
+                                name="_id"
+                                rules={[{ required: true, message: 'Please input your account ID!' }]}
+                            >
+                                <Input disabled={true} />
+                            </Form.Item>
+                        )
+                    }
                     <Form.Item name="name" label="Name" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>

@@ -1,5 +1,5 @@
-import Layouts from "../../../components/layouts/admin";
-import TableProductComponent from "../../../components/pages/admin/tableProduct";
+import Layouts from "../../components/layouts/admin";
+import TableProductComponent from "../../components/pages/admin/tableProduct";
 
 const AdminProductPage = () => {
     return <Layouts>

@@ -1,0 +1,28 @@
+.card-item {
+    background-color: #323232;
+    border-radius   : 20px;
+    margin          : 20px;
+    padding         : 30px 0;
+
+    .link {
+        color: #fff;
+
+        .name {
+            font-weight: 500;
+        }
+
+        .price {
+            font-size  : 20px;
+            font-weight: bold;
+        }
+    }
+}
+
+.card-item:hover {
+    box-shadow: -4px -4px 8px rgba(134, 134, 134, .2), 4px 4px 8px rgba(28, 28, 28, .4);
+}
+
+.card-item:hover img {
+    scale     : 1.1;
+    transition: 0.5s;
+}

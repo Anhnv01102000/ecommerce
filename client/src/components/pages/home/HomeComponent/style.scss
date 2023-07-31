@@ -2,26 +2,29 @@
     text-align: center;
     color     : #fff;
     margin    : 0 40px;
+    padding   : 0 20px;
+}
 
-    .link {
-        color: #fff;
+.newletter {
+    background-color: #212529;
+    color           : #fff;
+    text-align      : center;
+    padding-bottom  : 50px;
 
-        .product-card {
-            .card-item {
-                background-color: #323232;
-                border-radius   : 20px;
-                margin          : 20px;
-                padding         : 30px 0;
+    h5 {
+        padding-top: 30px;
+        font-size  : 20px;
+    }
 
-                .name {
-                    font-weight: 500;
-                }
+    .search {
+        width: 35%;
+    }
+}
 
-                .price {
-                    font-size  : 20px;
-                    font-weight: bold;
-                }
-            }
+@media screen and (max-width: 768px) {
+    .newletter {
+        .search {
+            width: 80%;
         }
     }
 }

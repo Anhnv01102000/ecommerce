@@ -1,26 +1,33 @@
 import { Link } from 'react-router-dom';
 import { Col, Row, Image } from 'antd';
+import "./style.scss"
 
-const ListProductComponent = (data: any) => {
+interface ChildProps {
+    data: any[];
+}
+
+const ListProductComponent: React.FC<ChildProps> = ({ data }) => {
+    console.log(data);
+
     return (
         <Row>
-            {data.map((el: any) => (
+            {data?.map((el: any) => (
                 <Col xs={12} lg={6} >
-                    <Link className='link' to="/">
-                        <div className='card-item'>
+                    <div className='card-item'>
+                        <Link className='link' to={`/product/${el._id}`}>
                             <Image
                                 className='image'
                                 src={el.images[0]}
                                 preview={false}
                             />
                             <div>
-                                <p className='name'>iPhone 14 Pro Max 128GB - Black</p>
+                                <p className='name'>{el.name}</p>
                                 <div className='price'>
-                                    <span>26.690.000</span>
+                                    <span>{el.price.toLocaleString("en")}đ</span>
                                 </div>
                             </div>
-                        </div>
-                    </Link>
+                        </Link>
+                    </div>
                 </Col>
             ))}
         </Row>

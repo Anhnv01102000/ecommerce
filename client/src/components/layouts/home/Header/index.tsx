@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, Input, Button, Image } from 'antd';
 import { SearchOutlined, UserOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import "./style.scss"
 import { getProduct } from '../../../../apis/apiProduct';
 import { getCategory } from '../../../../apis/apiCategory';
 import { useNavigate } from "react-router-dom";
+import type { MenuProps } from 'antd';
 
 
 const { SubMenu } = Menu;
@@ -14,8 +15,8 @@ const { Search } = Input
 
 const HomeHeaderComponent = () => {
 
-    const [data, setData] = useState([])
-    const [category, setCategory] = useState([])
+    const [data, setData] = useState<any[]>([])
+    const [category, setCategory] = useState<any[]>([])
 
     useEffect(() => {
         fetchProducts()
@@ -24,7 +25,7 @@ const HomeHeaderComponent = () => {
 
     const fetchProducts = async () => {
         let res = await getProduct()
-        console.log(res.data.products);
+        // console.log(res.data.products);
 
         if (res.status === 200) {
             setData(res.data.products)
@@ -42,6 +43,66 @@ const HomeHeaderComponent = () => {
 
     const navigate = useNavigate();
 
+    const items: MenuProps['items'] =
+        // [
+        //     {
+        //         label: "iPhone",
+        //         key: "/iphone"
+        //     },
+        //     {
+        //         label: "Mac",
+        //         key: "/mac"
+        //     },
+        //     {
+        //         label: "iPad",
+        //         key: "/ipad"
+        //     },
+        //     {
+        //         label: "Watch",
+        //         key: "/watch"
+        //     },
+        //     {
+        //         label: "Âm thanh",
+        //         key: "/amthanh"
+        //     },
+        //     {
+        //         label: "Phụ kiện",
+        //         key: "/phukien"
+        //     },
+        //     {
+        //         label: "TopCare",
+        //         key: "/topcare"
+        //     }
+        // ]
+
+
+        category.map(
+            el => (
+                {
+                    label: el.name,
+                    key: `/${el.name.toLowerCase()
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')  // Xóa dấu
+                        .replace(/\s/g, '')}`  // bỏ khoảng cách
+                }
+            )
+        )
+
+    const location = useLocation();
+    const [selectedKeys, setSelectedKeys] = useState("");
+
+    useEffect(() => {
+        const pathName = location.pathname;
+        setSelectedKeys(pathName);
+    }, [location.pathname]);
+
+    console.log(selectedKeys);
+
+
+
+    const onClick: MenuProps['onClick'] = (e) => {
+        navigate(e.key)
+    };
+
     return (
         <div>
             <header className="header">
@@ -49,7 +110,7 @@ const HomeHeaderComponent = () => {
                     <Link className='logo' to="/">
                         <Image
                             width={120}
-                            src="https://media.loveitopcdn.com/3807/logo-topzone-1.png"
+                            src="https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100,s_570x207/https://cdn.tgdd.vn/mwgcart/topzone/images/logo-video.png?v=4"
                             preview={false}
                         />
                     </Link>
@@ -67,8 +128,15 @@ const HomeHeaderComponent = () => {
                         <ShoppingCartOutlined style={{ fontSize: 30 }} />
                     </div>
                 </div>
-                <Menu theme='dark' className='menu' mode="horizontal">
-                    {
+                <Menu
+                    theme='dark'
+                    className='menu'
+                    mode="horizontal"
+                    items={items}
+                    onClick={onClick}
+                    selectedKeys={[selectedKeys]}
+                >
+                    {/* {
                         category.map((el: any) => {
                             return (
                                 <Menu.Item
@@ -85,8 +153,7 @@ const HomeHeaderComponent = () => {
                                 </Menu.Item>
                             )
                         })
-                    }
-
+                    } */}
                 </Menu>
             </header>
         </div>

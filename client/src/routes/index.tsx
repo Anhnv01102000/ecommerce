@@ -6,12 +6,25 @@ import AdminProduct from "../pages/admin/product";
 import AdminCategory from "../pages/admin/category";
 import AdminOrder from "../pages/admin/order";
 import HomePage from "../pages/home";
-import IPhone from "../pages/home/iPhone/iPhone";
+import IphonePage from "../pages/home/iPhone";
+import MacPage from "../pages/home/Mac";
+import IpadPage from "../pages/home/Ipad";
+import WatchPage from "../pages/home/Watch";
+import SoundPage from "../pages/home/Sound";
+import AccessoryPage from "../pages/home/Accessory";
+import TopCarePage from "../pages/home/TopCare";
+import Login from "../pages/admin/login";
+import Register from "../pages/admin/register";
+import ProductDetailPage from "../pages/home/ProductDetail";
+
 
 const BrowerRouter = () => {
     return (
         <BrowserRouter>
             <Routes>
+                <Route path='/login' element={<Login />} />
+                <Route path='/register' element={<Register />} />
+
                 {/* admin */}
                 <Route path='/admin' element={<AdminPage />} />
                 <Route path="/admin/user" element={<AdminUser />} />
@@ -21,13 +34,15 @@ const BrowerRouter = () => {
 
                 {/* home */}
                 <Route path='/home' element={<HomePage />} />
-                <Route path='/iphone' element={<IPhone />} />
-                <Route path='/mac' element={<IPhone />} />
-                <Route path='/ipad' element={<IPhone />} />
-                <Route path='/watch' element={<IPhone />} />
-                <Route path='/amthanh' element={<IPhone />} />
-                <Route path='/phukien' element={<IPhone />} />
-                <Route path='/topcare' element={<IPhone />} />
+                <Route path='/iphone' element={<IphonePage />} />
+                <Route path='/mac' element={<MacPage />} />
+                <Route path='/ipad' element={<IpadPage />} />
+                <Route path='/watch' element={<WatchPage />} />
+                <Route path='/amthanh' element={<SoundPage />} />
+                <Route path='/phukien' element={<AccessoryPage />} />
+                <Route path='/topcare' element={<TopCarePage />} />
+                <Route path='/product/:id' element={<ProductDetailPage />} />
+
 
                 {/* lỗi không tồn tại trang */}
                 <Route path="*" element={<Error />} />

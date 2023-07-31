@@ -1,5 +1,5 @@
-import Layouts from "../../../components/layouts/admin";
-import TableCategoryComponent from "../../../components/pages/admin/tableCategory";
+import Layouts from "../../components/layouts/admin";
+import TableCategoryComponent from "../../components/pages/admin/tableCategory";
 
 const AdminCategoryPage = () => {
     return <Layouts>
