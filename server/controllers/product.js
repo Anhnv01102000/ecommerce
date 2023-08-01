@@ -9,7 +9,7 @@ const createProduct = asyncHandler(async (req, res) => {
     const images = req.files['images']?.map(el => el.path)
     // // console.log(req.files['images']?.map(el => el.path));
 
-    // if (images) req.body.images = images
+    if (images) req.body.images = images
     console.log(req.body);
     const newProduct = (await Product.create(req.body))
     return res.status(200).json({
@@ -129,17 +129,12 @@ const ratings = asyncHandler(async (req, res) => {
 })
 
 const uploadImagesProduct = asyncHandler(async (req, res) => {
-    const { pid } = req.params
-    console.log(req.files);
-    if (!req.files) throw new Error("Missing inputs")
-    const response = await Product.findByIdAndUpdate(
-        pid,
-        { $push: { images: req.files.map(el => el.path) } },
-        { new: true }
-    )
+    const files = req.files?.map(el => el.path)
+    console.log(req.files?.map(el => el.path));
+    if (!files) throw new Error("Missing inputs")
     return res.status(200).json({
-        status: response ? true : false,
-        updateProduct: response ? response : "Cannot upload images product"
+        success: true,
+        files
     })
 })
 

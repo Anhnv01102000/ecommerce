@@ -3,7 +3,7 @@ import { Button, Form, Input, Modal, Space, Table, Upload, Select } from 'antd';
 import { PlusOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Image } from 'antd';
-import { getProduct, createNewProduct, editProduct, deleteProduct } from '../../../apis/apiProduct';
+import { getProduct, createNewProduct, editProduct, deleteProduct, uploadImage } from '../../../apis/apiProduct';
 import { getCategory } from '../../../apis/apiCategory';
 
 enum STATUS {
@@ -12,6 +12,8 @@ enum STATUS {
 }
 
 const normFile = (e: any) => {
+    console.log('event: ', e);
+
     if (Array.isArray(e)) {
         return e;
     }
@@ -80,19 +82,17 @@ const TableProduct: React.FC = () => {
     }
 
     const onFinish = async (values: any) => {
-        // console.log(values);
+        // values.images.map
+        const images = await values.images
+        console.log(values.images);
 
-        const dataForm = new FormData()
-        dataForm.append("name", values.name)
-        dataForm.append("price", values.price)
-        dataForm.append("description", values.description)
-        dataForm.append("category", values.category)
-        dataForm.append("images", values.images[0].originFileObj)
-
-        // console.log(typeof (values.images[0].originFileObj));
-
-        // console.log(typeof (values.images.map((el: any) => el.originFileObj)));
-
+        const dataForm = {
+            name: values.name,
+            price: values.price,
+            description: values.description,
+            category: values.category,
+            images: values.images.originFileObj
+        }
 
         if (status === STATUS.CREATE) {
             const response = await createNewProduct(dataForm)
@@ -101,7 +101,6 @@ const TableProduct: React.FC = () => {
                 fetchProducts();
             }
         } else {
-            console.log(JSON.stringify(Object.fromEntries(dataForm)));
             const response = await editProduct(values._id, dataForm)
             if (response.status === 200) {
                 fetchProducts();
@@ -247,8 +246,11 @@ const TableProduct: React.FC = () => {
                     <Form.Item name="description" label="Mô tả sản phẩm" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>
-                    <Form.Item name="images" label="images" valuePropName="fileList" getValueFromEvent={normFile}>
-                        <Upload listType="picture-card">
+                    <Form.Item name="form-images" label="form-images" valuePropName="images" getValueFromEvent={normFile}>
+                        <Upload
+                            name='images'
+                            action={`http://localhost:8888/api/product/uploadimage`}
+                            listType="picture-card">
                             <div>
                                 <PlusOutlined />
                                 <div style={{ marginTop: 8 }}>Upload</div>

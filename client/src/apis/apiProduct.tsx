@@ -10,16 +10,22 @@ const createNewProduct = (dataForm: any) => {
     return axios.post('product/', dataForm, { headers: { "Authorization": `Bearer ${token}` } })
 }
 
-const editProduct = (id: number, dataForm: any) => {
+const editProduct = (id: String, dataForm: any) => {
     const token = localStorage.getItem("access-token")
     // console.log(token);
     return axios.put(`product/${id}`, dataForm, { headers: { "Authorization": `Bearer ${token}` } })
 }
 
-const deleteProduct = (id: number) => {
+const deleteProduct = (id: String) => {
     const token = localStorage.getItem("access-token")
     // console.log(token);
     return axios.delete(`product/${id}`, { headers: { "Authorization": `Bearer ${token}` } })
 }
 
-export { createNewProduct, getProduct, editProduct, deleteProduct }
+const uploadImage = () => {
+    return axios.post(`product/uploadimage`)
+}
+
+
+
+export { createNewProduct, getProduct, editProduct, deleteProduct, uploadImage }
