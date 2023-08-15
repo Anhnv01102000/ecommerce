@@ -3,8 +3,11 @@ import { Button, Form, Input, Modal, Space, Table, Upload, Select } from 'antd';
 import { PlusOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Image } from 'antd';
-import { getProduct, createNewProduct, editProduct, deleteProduct, uploadImage } from '../../../apis/apiProduct';
+import { getProduct, createNewProduct, editProduct, deleteProduct } from '../../../apis/apiProduct';
 import { getCategory } from '../../../apis/apiCategory';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
 
 enum STATUS {
     EDIT,
@@ -28,8 +31,8 @@ const TableProduct: React.FC = () => {
         address: string;
     }
 
-    const [data, setData] = useState<DataType[]>([])
-    const [category, setCategory] = useState([])
+    const [product, setProduct] = useState<DataType[]>([])
+    const [category, setCategory] = useState<any[]>([])
 
     useEffect(() => {
         fetchProducts()
@@ -41,7 +44,7 @@ const TableProduct: React.FC = () => {
         console.log(res.data.products);
 
         if (res.status === 200) {
-            setData(res.data.products)
+            setProduct(res.data.products)
         }
     }
 
@@ -81,40 +84,8 @@ const TableProduct: React.FC = () => {
         setIsModalOpen(true);
     }
 
-    const onFinish = async (values: any) => {
-        // values.images.map
-        const images = await values.images
-        console.log(values.images);
+    const [description, setDescription] = useState('')
 
-        const dataForm = {
-            name: values.name,
-            price: values.price,
-            description: values.description,
-            category: values.category,
-            images: values.images.originFileObj
-        }
-
-        if (status === STATUS.CREATE) {
-            const response = await createNewProduct(dataForm)
-            console.log(response);
-            if (response.status === 200) {
-                fetchProducts();
-            }
-        } else {
-            const response = await editProduct(values._id, dataForm)
-            if (response.status === 200) {
-                fetchProducts();
-            }
-        }
-    };
-
-    const onFinishFailed = (errorInfo: any) => {
-        console.log('Failed:', errorInfo);
-    };
-
-    const onReset = () => {
-        form.resetFields();
-    };
 
     const { confirm } = Modal;
 
@@ -132,6 +103,11 @@ const TableProduct: React.FC = () => {
                 console.log('Cancel');
             },
         });
+    };
+
+    const getCategoryName = (categoryId: any) => {
+        const foundCategory = category.find((cat: any) => cat._id === categoryId);
+        return foundCategory ? foundCategory.name : 'Unknown';
     };
 
     const columns: ColumnsType<DataType> = [
@@ -167,11 +143,13 @@ const TableProduct: React.FC = () => {
             title: 'Danh mục',
             dataIndex: 'category',
             key: 'category',
+            render: categoryId => getCategoryName(categoryId),
         },
         {
             title: 'Ngày tạo',
             dataIndex: 'createdAt',
             key: 'createdAt',
+            render: createdAt => (new Date(createdAt).toLocaleDateString("en-GB")),
         },
         {
             title: 'Action',
@@ -191,9 +169,47 @@ const TableProduct: React.FC = () => {
 
     const [input, setInput] = useState('')
     const filterData = () => {
-        if (input === '') return data
-        return data.filter(({ name }) => name.toLowerCase().includes(input.toLowerCase()))
+        if (input === '') return product
+        return product.filter(({ name }) => name.toLowerCase().includes(input.toLowerCase()))
     }
+
+    const onFinish = async (values: any) => {
+        console.log(values);
+
+        const dataForm = new FormData()
+        dataForm.append("name", values.name)
+        dataForm.append("price", values.price)
+        dataForm.append("description", description)
+        dataForm.append("category", values.category)
+        // dataForm.append("images", values.images[0].originFileObj)
+        // dataForm.append("images", values.images.map((el: any) => el.originFileObj))
+
+        values.images.map((el: any) => (
+            dataForm.append("images", el.originFileObj)
+        ))
+
+
+        if (status === STATUS.CREATE) {
+            const response = await createNewProduct(dataForm)
+            console.log(response);
+            if (response.status === 200) {
+                fetchProducts();
+            }
+        } else {
+            const response = await editProduct(values._id, dataForm)
+            if (response.status === 200) {
+                fetchProducts();
+            }
+        }
+    };
+
+    const onFinishFailed = (errorInfo: any) => {
+        console.log('Failed:', errorInfo);
+    };
+
+    const onReset = () => {
+        form.resetFields();
+    };
 
     return (
         <>
@@ -244,13 +260,28 @@ const TableProduct: React.FC = () => {
                         </Select>
                     </Form.Item>
                     <Form.Item name="description" label="Mô tả sản phẩm" rules={[{ required: true }]}>
-                        <Input />
+                        {/* <Input /> */}
+                        <CKEditor
+                            editor={ClassicEditor}
+                            data={description}
+                            onChange={(event, editor) => {
+                                const data = editor.getData();
+                                setDescription(data)
+                            }}
+                        />
                     </Form.Item>
-                    <Form.Item name="form-images" label="form-images" valuePropName="images" getValueFromEvent={normFile}>
+                    <Form.Item
+                        name="images"
+                        label="Ảnh sản phẩm"
+                        valuePropName="images"
+                        getValueFromEvent={normFile}
+                    >
                         <Upload
+                            action="http://localhost:8888/api/product/uploadimage"
                             name='images'
-                            action={`http://localhost:8888/api/product/uploadimage`}
-                            listType="picture-card">
+                            listType="picture-card"
+                            multiple
+                        >
                             <div>
                                 <PlusOutlined />
                                 <div style={{ marginTop: 8 }}>Upload</div>

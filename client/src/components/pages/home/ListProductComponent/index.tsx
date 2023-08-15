@@ -7,8 +7,6 @@ interface ChildProps {
 }
 
 const ListProductComponent: React.FC<ChildProps> = ({ data }) => {
-    console.log(data);
-
     return (
         <Row>
             {data?.map((el: any) => (

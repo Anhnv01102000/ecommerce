@@ -4,18 +4,17 @@ const asyncHandler = require("express-async-handler")
 const createProduct = asyncHandler(async (req, res) => {
     const { name, price, description, category } = req.body
     // console.log(typeof ((req.files['images'])));
-    // console.log((req.files));
+    console.log((req.files));
 
     const images = req.files['images']?.map(el => el.path)
     // // console.log(req.files['images']?.map(el => el.path));
 
     if (images) req.body.images = images
-    console.log(req.body);
+    // console.log(req.body);
     const newProduct = (await Product.create(req.body))
     return res.status(200).json({
         success: newProduct ? true : false,
         createdProduct: newProduct ? newProduct : "Cannot create new product",
-
     })
 })
 
@@ -78,7 +77,14 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
     const { pid } = req.params
-    console.log(req.body);
+    const { name, price, description, category } = req.body
+    // console.log(typeof ((req.files['images'])));
+    console.log((req.files));
+
+    const images = req.files['images']?.map(el => el.path)
+    // // console.log(req.files['images']?.map(el => el.path));
+
+    if (images) req.body.images = images
     const updateProduct = await Product.findByIdAndUpdate(pid, req.body, { new: true })
     return res.status(200).json({
         success: updateProduct ? true : false,
@@ -130,7 +136,7 @@ const ratings = asyncHandler(async (req, res) => {
 
 const uploadImagesProduct = asyncHandler(async (req, res) => {
     const files = req.files?.map(el => el.path)
-    console.log(req.files?.map(el => el.path));
+    // console.log(req.files?.map(el => el.path));
     if (!files) throw new Error("Missing inputs")
     return res.status(200).json({
         success: true,

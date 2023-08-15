@@ -46,25 +46,20 @@ const TableUser: React.FC = () => {
     };
 
     const columns: ColumnsType<DataType> = [
-        // {
-        //     title: 'ID',
-        //     dataIndex: '_id',
-        //     key: '_id',
-        //     width: 160,
-        //     fixed: 'left',
-        // },
         {
             title: 'Tên người dùng',
             dataIndex: 'name',
             key: 'Name',
             fixed: 'left',
-            width: 150
+            width: 150,
+            align: 'center',
         },
         {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
-            width: 220
+            width: 220,
+            align: 'center',
         },
         // {
         //     title: 'Password',
@@ -76,16 +71,19 @@ const TableUser: React.FC = () => {
             title: 'SĐT',
             dataIndex: 'mobile',
             key: 'mobile',
+            align: 'center',
         },
         {
             title: 'Địa chỉ',
             dataIndex: 'address',
             key: 'address',
+            align: 'center',
         },
         {
             title: 'Ngày tạo',
             dataIndex: 'createdAt',
             key: 'createdAt',
+            align: 'center',
         },
     ];
 

@@ -14,7 +14,6 @@ const { SubMenu } = Menu;
 const { Search } = Input
 
 const HomeHeaderComponent = () => {
-
     const [data, setData] = useState<any[]>([])
     const [category, setCategory] = useState<any[]>([])
 
@@ -95,14 +94,27 @@ const HomeHeaderComponent = () => {
         setSelectedKeys(pathName);
     }, [location.pathname]);
 
-    console.log(selectedKeys);
-
-
+    // console.log(selectedKeys);
 
     const onClick: MenuProps['onClick'] = (e) => {
         navigate(e.key)
     };
 
+    let listCartLocalStorage: any = localStorage.getItem('listCart')
+
+    if (listCartLocalStorage !== null) {
+        listCartLocalStorage = JSON.parse(listCartLocalStorage)
+    } else {
+        listCartLocalStorage = []
+    }
+
+    const [listCart, setListCart] = useState<any[]>(listCartLocalStorage)
+
+    let countProduct = 0;
+    for (var i = 0; i < listCart.length; i++) {
+        var item = listCart[i];
+        countProduct += item.quantity
+    }
     return (
         <div>
             <header className="header">
@@ -124,8 +136,9 @@ const HomeHeaderComponent = () => {
                         />
                     </div>
                     <div className='icon'>
-                        <UserOutlined style={{ fontSize: 24, margin: "0 30px 0 0" }} />
-                        <ShoppingCartOutlined style={{ fontSize: 30 }} />
+                        <ShoppingCartOutlined onClick={() => { navigate("/cart") }} style={{ fontSize: 28, margin: "0 30px 0 0" }} />
+                        <span className='count-product'>{countProduct}</span>
+                        <UserOutlined style={{ fontSize: 24 }} />
                     </div>
                 </div>
                 <Menu

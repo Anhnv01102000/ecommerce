@@ -18,6 +18,19 @@
             width: 400px;
         }
 
+        .icon {
+            .count-product {
+                position        : absolute;
+                top             : 15%;
+                right           : 7.5%;
+                background-color: red;
+                border-radius   : 50%;
+                padding         : 2px 6px;
+                font-size       : 10px;
+                color           : #fff;
+                font-weight     : bold;
+            }
+        }
     }
 
     .menu {
@@ -38,9 +51,6 @@
             background-color: #212529;
         }
 
-        // .ant-menu-item-selected::after {
-        //     border-bottom-width: 3px;
-        //     border-bottom-color: #fff;
-        // }
+
     }
 }

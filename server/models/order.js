@@ -4,20 +4,18 @@ const mongoose = require('mongoose'); // Erase if already required
 var orderSchema = new mongoose.Schema({
     products: [
         {
-            product: { type: mongoose.Types.ObjectId, ref: "Product" },
-            count: { type: Number }
+            product: { type: String },
+            quantity: { type: Number }
         }
     ],
-    status: {
-        type: String,
-        default: "Process",
-        enum: ["Cancel", "Process", "Success"],
-    },
     total: { type: Number },
-    orderBy: {
-        type: mongoose.Types.ObjectId,
-        ref: "User"
-    }
+    orderBy: [
+        {
+            name: { type: String },
+            phone: { type: Number },
+            address: { type: String }
+        }
+    ]
 });
 
 //Export the model

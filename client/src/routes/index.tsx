@@ -16,6 +16,8 @@ import TopCarePage from "../pages/home/TopCare";
 import Login from "../pages/admin/login";
 import Register from "../pages/admin/register";
 import ProductDetailPage from "../pages/home/ProductDetail";
+import CartPage from "../pages/home/Cart";
+import SuccessPage from "../pages/home/Success";
 
 
 const BrowerRouter = () => {
@@ -42,8 +44,8 @@ const BrowerRouter = () => {
                 <Route path='/phukien' element={<AccessoryPage />} />
                 <Route path='/topcare' element={<TopCarePage />} />
                 <Route path='/product/:id' element={<ProductDetailPage />} />
-
-
+                <Route path='/cart' element={<CartPage />} />
+                <Route path='/success' element={<SuccessPage />} />
                 {/* lỗi không tồn tại trang */}
                 <Route path="*" element={<Error />} />
                 {/* Auth */}

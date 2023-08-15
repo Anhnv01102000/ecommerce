@@ -22,10 +22,9 @@ const deleteProduct = (id: String) => {
     return axios.delete(`product/${id}`, { headers: { "Authorization": `Bearer ${token}` } })
 }
 
-const uploadImage = () => {
-    return axios.post(`product/uploadimage`)
+const ratings = (dataForm: any) => {
+    const token = localStorage.getItem("access-token")
+    return axios.put(`product/ratings`, dataForm, { headers: { "Authorization": `Bearer ${token}` } })
 }
 
-
-
-export { createNewProduct, getProduct, editProduct, deleteProduct, uploadImage }
+export { createNewProduct, getProduct, editProduct, deleteProduct, ratings }

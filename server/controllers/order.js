@@ -11,28 +11,16 @@ const createOrder = asyncHandler(async (req, res) => {
     })
 })
 
-const updateStatusOrder = asyncHandler(async (req, res) => {
-    const { oid } = req.params
-    const { status } = req.body
-    if (!status) throw new Error("Missing inputs")
-    const response = await Order.findByIdAndUpdate(oid, { status }, { new: true })
-    return res.status(200).json({
-        success: response ? true : false,
-        response: response ? response : "Something went wrong"
-    })
-})
-
-const getOrderAdmin = asyncHandler(async (req, res) => {
+const getOrder = asyncHandler(async (req, res) => {
     const response = await Order.find()
     return res.status(200).json({
         success: response ? true : false,
-        response: response ? response : "Something went wrong"
+        order: response ? response : "Something went wrong"
     })
 })
 
 
 module.exports = {
     createOrder,
-    updateStatusOrder,
-    getOrderAdmin
+    getOrder
 }
