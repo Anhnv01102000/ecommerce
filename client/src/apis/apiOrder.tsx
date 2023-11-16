@@ -1,12 +1,12 @@
 import axios from '../utils/axiosCustomize'
 
-const createOrder = (dataForm: any) => {
+const createNewOrder = (dataForm: any) => {
     return axios.post('order/', dataForm)
 }
 
 const getOrder = () => {
     const token = localStorage.getItem("access-token")
-    return axios.get('order/', { headers: { "Authorization": `Bearer ${token}` } })
+    return axios.get('order/')
 }
 
-export { createOrder, getOrder }
+export { createNewOrder, getOrder }

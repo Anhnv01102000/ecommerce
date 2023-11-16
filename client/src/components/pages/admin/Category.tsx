@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Button, DatePicker, Form, Input, Modal, Space, Table, Upload } from 'antd';
 import { PlusOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { getCategory, createNewCategory, editCategory, deleteCategory } from '../../../apis/apiCategory';
+import store from '../../../stores';
+import { createCategory, deleteCategory1, editCategory1, getListCategory } from '../../../stores/actions/actionCategory';
+import { useSelector } from 'react-redux';
 
 const { Search } = Input;
-
 
 enum STATUS {
     EDIT,
@@ -22,6 +23,8 @@ const TableCategory: React.FC = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [status, setStatus] = useState(STATUS.CREATE)
+
+    const category = useSelector((state: any) => state?.categoryReducer?.categories)
 
     const openCreateModal = () => {
         setIsModalOpen(true);
@@ -54,17 +57,18 @@ const TableCategory: React.FC = () => {
         }
 
         if (status === STATUS.CREATE) {
-            const response = await createNewCategory(dataForm)
-            console.log(response);
-
-            if (response.status === 200) {
-                fetchUser();
-            }
+            // const response = await createNewCategory(dataForm)
+            // console.log(response);
+            // if (response.status === 200) {
+            //     fetchUser();
+            // }
+            store.dispatch(createCategory(dataForm))
         } else {
-            const response = await editCategory(values._id, dataForm)
-            if (response.status === 200) {
-                fetchUser();
-            }
+            // const response = await editCategory(values._id, dataForm)
+            // if (response.status === 200) {
+            //     fetchUser();
+            // }
+            store.dispatch(editCategory1(values._id, dataForm))
         }
     };
 
@@ -76,19 +80,17 @@ const TableCategory: React.FC = () => {
         form.resetFields();
     };
 
-    const [data, setData] = useState<DataType[]>([])
-
     useEffect(() => {
-        fetchUser()
+        fetchCategory()
     }, [])
 
-    const fetchUser = async () => {
-        let res = await getCategory()
+    const fetchCategory = async () => {
+        // let res = await getCategory()
         // console.log(res.data.categories);
-
-        if (res.status === 200) {
-            setData(res.data.categories)
-        }
+        // if (res.status === 200) {
+        //     setData(res.data.categories)
+        // }
+        store.dispatch(getListCategory())
     }
 
     const { confirm } = Modal;
@@ -98,10 +100,11 @@ const TableCategory: React.FC = () => {
             title: 'Do you Want to delete these items?',
             icon: <ExclamationCircleFilled />,
             async onOk() {
-                const response = await deleteCategory(record._id)
-                if (response.status === 200) {
-                    fetchUser();
-                }
+                // const response = await deleteCategory(record._id)
+                // if (response.status === 200) {
+                //     fetchUser();
+                // }
+                store.dispatch(deleteCategory1(record._id))
             },
             onCancel() {
                 console.log('Cancel');
@@ -114,16 +117,19 @@ const TableCategory: React.FC = () => {
             title: 'ID',
             dataIndex: '_id',
             key: '_id',
+            align: "center",
         },
         {
             title: 'Tên danh mục',
             dataIndex: 'name',
             key: 'name',
+            align: "center",
         },
         {
             title: 'Action',
             key: 'action',
             fixed: 'right',
+            align: "center",
             render: (_, record) => (
                 <Space size={'large'}>
                     <Button onClick={() => handleEditRow(record)}>Edit</Button>
@@ -136,9 +142,10 @@ const TableCategory: React.FC = () => {
     // Search
 
     const [input, setInput] = useState('')
+
     const filterData = () => {
-        if (input === '') return data
-        return data.filter(({ name }) => name.toLowerCase().includes(input.toLowerCase()))
+        if (input === '') return category
+        return category.filter(({ name }) => name.toLowerCase().includes(input.toLowerCase()))
     }
 
     return (
@@ -191,9 +198,11 @@ const TableCategory: React.FC = () => {
                 </Form>
             </Modal >
             <Table
+                rowKey={"_id"}
                 columns={columns}
                 dataSource={filterData()}
-                pagination={{ defaultPageSize: 5, showSizeChanger: true, pageSizeOptions: ['5', '10', '20'] }}
+                bordered
+                pagination={{ defaultPageSize: 3, showSizeChanger: true, pageSizeOptions: ['3', '5', '10'] }}
             />
         </>
     )

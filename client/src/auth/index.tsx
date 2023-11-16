@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { Children, useEffect, useState } from "react";
+import { useNavigate, useOutlet } from "react-router-dom";
 import { refreshToken } from "../apis/apiUser";
 
 
-const Auth = ({ children }: { children: React.ReactNode }) => {
+const Auth = ({ children }) => {
     const navigate = useNavigate();
+    const [status, setStatus] = useState(false)
 
     const checkAuth = async (getRefreshToken: String) => {
         try {
@@ -13,17 +14,18 @@ const Auth = ({ children }: { children: React.ReactNode }) => {
                 refreshToken: getRefreshToken
             }
             const response = await refreshToken(dataForm)
-            console.log(response);
+            // console.log(response);
             localStorage.setItem("access-token", response.data.newAccessToken);
+            setStatus(true)
         } catch (error) {
             console.log('error', error);
+            setStatus(false)
             navigate('/login');
         }
     }
 
     useEffect(function () {
         const getRefreshToken = localStorage.getItem("refresh-token");
-
         if (getRefreshToken === null) {
             navigate('/login');
         } else {
@@ -31,7 +33,14 @@ const Auth = ({ children }: { children: React.ReactNode }) => {
         }
     }, []);
 
-    return <>{children}</>;
+    const outlet = useOutlet();
+
+    return (
+        <>
+            {status ? <>{children}</> : <></>}
+        </>
+    )
+
 }
 
 export default Auth;

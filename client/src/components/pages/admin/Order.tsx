@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import type { ColumnsType } from 'antd/es/table';
 import { getOrder } from '../../../apis/apiOrder';
 import { Table, Input } from 'antd';
+import { useSelector } from 'react-redux';
+import store from '../../../stores';
+import { getListOrder } from '../../../stores/actions/actionOrder';
 
 const OrderTable = () => {
     interface DataType {
@@ -10,24 +13,20 @@ const OrderTable = () => {
         products: any[];
         orderBy: any[];
     }
-
-    const [order, setOrder] = useState<DataType[]>([])
+    const order = useSelector((state: any) => state?.orderReducer?.orders)
 
     useEffect(() => {
         fetchOrders()
     }, [])
 
     const fetchOrders = async () => {
-        let res = await getOrder()
+        // let res = await getOrder()
 
-        if (res.status === 200) {
-            setOrder(res.data.order)
-        }
+        // if (res.status === 200) {
+        //     setOrder(res.data.order)
+        // }
+        store.dispatch(getListOrder())
     }
-
-    console.log(order);
-
-
 
     const columns: ColumnsType<DataType> = [
         {
@@ -89,8 +88,10 @@ const OrderTable = () => {
                 />
             </div>
             <Table
+                rowKey={"_id"}
                 dataSource={order}
                 columns={columns}
+                bordered
                 pagination={{ defaultPageSize: 3, showSizeChanger: true, pageSizeOptions: ['3', '5', '10'] }}
             />
         </>

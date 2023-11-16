@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import {
     ShoppingCartOutlined,
     DesktopOutlined,
@@ -5,8 +6,26 @@ import {
     MergeCellsOutlined
 } from "@ant-design/icons";
 import { Card, Space, Statistic, Typography } from "antd";
+import { useSelector } from 'react-redux';
+import store from "../../../stores";
+import { getListOrder } from '../../../stores/actions/actionOrder';
+import { getListCategory } from "../../../stores/actions/actionCategory";
+import { getListProduct } from "../../../stores/actions/actionProduct";
+import { getListUser } from "../../../stores/actions/actionUser";
+
 
 const AdminComponent = () => {
+    const order = useSelector((state: any) => state?.orderReducer?.orders)
+    const category = useSelector((state: any) => state?.categoryReducer?.categories)
+    const user = useSelector((state: any) => state.userReducer?.users)
+    const product = useSelector((state: any) => state?.productReducer?.products)
+
+    useEffect(() => {
+        store.dispatch(getListOrder())
+        store.dispatch(getListCategory())
+        store.dispatch(getListProduct())
+        store.dispatch(getListUser())
+    }, [])
     return (
         <Space size={20} direction="vertical">
             <Typography.Title level={3}>Dashboard</Typography.Title>
@@ -22,7 +41,7 @@ const AdminComponent = () => {
                                 padding: 12
                             }}
                         />
-                        <Statistic title="Order" value="1234" />
+                        <Statistic title="Order" value={order.length} style={{ textAlign: "center" }} />
                     </Space>
                 </Card>
                 <Card style={{ padding: "0 12px" }}>
@@ -36,7 +55,7 @@ const AdminComponent = () => {
                                 padding: 12
                             }}
                         />
-                        <Statistic title="Category" value="1234" />
+                        <Statistic title="Category" value={category.length} style={{ textAlign: "center" }} />
                     </Space>
                 </Card>
                 <Card style={{ padding: "0 12px" }}>
@@ -50,7 +69,7 @@ const AdminComponent = () => {
                                 padding: 12
                             }}
                         />
-                        <Statistic title="User" value="1234" />
+                        <Statistic title="User" value={user.length} style={{ textAlign: "center" }} />
                     </Space>
                 </Card>
                 <Card style={{ padding: "0 12px" }}>
@@ -64,7 +83,7 @@ const AdminComponent = () => {
                                 padding: 12
                             }}
                         />
-                        <Statistic title="Product" value="1234" />
+                        <Statistic title="Product" value={product.length} style={{ textAlign: "center" }} />
                     </Space>
                 </Card>
             </Space>

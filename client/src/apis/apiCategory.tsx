@@ -6,21 +6,15 @@ const getCategory = () => {
 }
 
 const createNewCategory = (dataForm: any) => {
-    const token = localStorage.getItem("access-token")
-    console.log(token);
-    return axios.post('category/', dataForm, { headers: { "Authorization": `Bearer ${token}` } })
+    return axios.post('category/', dataForm)
 }
 
-const editCategory = (id: number, dataForm: any) => {
-    const token = localStorage.getItem("access-token")
-    console.log(token);
-    return axios.put(`category/${id}`, dataForm, { headers: { "Authorization": `Bearer ${token}` } })
+const editCategory = (id: String, dataForm: any) => {
+    return axios.put(`category/${id}`, dataForm)
 }
 
-const deleteCategory = (id: number) => {
-    const token = localStorage.getItem("access-token")
-    console.log(token);
-    return axios.delete(`category/${id}`, { headers: { "Authorization": `Bearer ${token}` } })
+const deleteCategory = (id: String) => {
+    return axios.delete(`category/${id}`)
 }
 
 export { createNewCategory, getCategory, editCategory, deleteCategory }

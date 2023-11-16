@@ -13,6 +13,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 const { Content, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>['items'][number];
+
 function getItem(
     label: React.ReactNode,
     key: React.Key,
@@ -41,6 +42,8 @@ const ContentComponent = ({ children }: { children: ReactNode }) => {
     } = theme.useToken();
 
     const { pathname } = useLocation();
+    // console.log(pathname);
+
     const [selectedKeys, setSelectedKeys] = useState("/");
 
     useEffect(() => {
@@ -49,20 +52,23 @@ const ContentComponent = ({ children }: { children: ReactNode }) => {
 
     const navigate = useNavigate();
 
-    // const listBreadcrumb = pathname.split('/')
-    // console.log(listBreadcrumb);
+    const listBreadcrumb = pathname.split('/').filter(el => el)
+    console.log(listBreadcrumb);
 
 
     return (
         <Layout>
             <Content style={{ padding: '0 50px' }}>
-                <Breadcrumb style={{ margin: '16px 0' }}>
-                    <Breadcrumb.Item>Home</Breadcrumb.Item>
-                    <Breadcrumb.Item>List</Breadcrumb.Item>
-                    <Breadcrumb.Item>App</Breadcrumb.Item>
-                </Breadcrumb>
+                <Breadcrumb style={{ margin: '16px 0' }}
+                    items={listBreadcrumb?.map(el => ({ title: el.charAt(0).toUpperCase() + el.slice(1) }))}
+                />
+                {/* {
+                        listBreadcrumb?.map((el, index, array) => (
+                            el.length ? <Breadcrumb.Item key={index}>{el.charAt(0).toUpperCase() + el.slice(1)}</Breadcrumb.Item> : null
+                        ))
+                    }
+                </Breadcrumb> */}
 
-                {/* <Breadcrumb items={listBreadcrumb.map(el => ({ path: `/${el}`, breadcrumbName: el }))} /> */}
                 <Layout style={{ background: colorBgContainer }}>
                     <Sider style={{ background: colorBgContainer }} width={200}>
                         <Menu

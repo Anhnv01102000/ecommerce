@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, Modal, Space, Table, Select } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { getUser, deleteUser } from '../../../apis/apiUser';
+import { getUser } from '../../../apis/apiUser';
+import store from '../../../stores';
+import { getListUser } from '../../../stores/actions/actionUser';
+import { useSelector } from 'react-redux';
 
 const TableUser: React.FC = () => {
     interface DataType {
@@ -12,38 +15,19 @@ const TableUser: React.FC = () => {
         address: string;
     }
 
-    const [data, setData] = useState<DataType[]>([])
+    const user = useSelector((state: any) => state?.userReducer?.users)
 
     useEffect(() => {
         fetchUser()
     }, [])
 
     const fetchUser = async () => {
-        let res = await getUser()
-        console.log(res.data.users);
-
-        if (res.status === 200) {
-            setData(res.data.users)
-        }
+        // let res = await getUser()
+        // if (res.status === 200) {
+        //     setData(res.data.users)
+        // }
+        store.dispatch(getListUser())
     }
-
-    const { confirm } = Modal;
-
-    const showConfirm = (record: any) => {
-        confirm({
-            title: 'Do you Want to delete these items?',
-            icon: <ExclamationCircleFilled />,
-            async onOk() {
-                const response = await deleteUser(record._id)
-                if (response.status === 200) {
-                    fetchUser();
-                }
-            },
-            onCancel() {
-                console.log('Cancel');
-            },
-        });
-    };
 
     const columns: ColumnsType<DataType> = [
         {
@@ -84,6 +68,7 @@ const TableUser: React.FC = () => {
             dataIndex: 'createdAt',
             key: 'createdAt',
             align: 'center',
+            render: createdAt => (new Date(createdAt).toLocaleDateString("en-GB")),
         },
     ];
 
@@ -91,11 +76,9 @@ const TableUser: React.FC = () => {
 
     const [input, setInput] = useState('')
     const filterData = () => {
-        if (input === '') return data
-        return data.filter(({ name }) => name.toLowerCase().includes(input.toLowerCase()))
+        if (input === '') return user
+        return user.filter(({ name }) => name.toLowerCase().includes(input.toLowerCase()))
     }
-
-
 
     return (
         <>
@@ -109,9 +92,11 @@ const TableUser: React.FC = () => {
             </div>
 
             <Table
+                rowKey={"_id"}
                 columns={columns}
                 dataSource={filterData()}
-                pagination={{ defaultPageSize: 5, showSizeChanger: true, pageSizeOptions: ['5', '10', '20'] }}
+                bordered
+                pagination={{ defaultPageSize: 3, showSizeChanger: true, pageSizeOptions: ['3', '5', '10'] }}
             />
         </>
     )

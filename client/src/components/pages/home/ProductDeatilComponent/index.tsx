@@ -8,6 +8,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getProduct, ratings } from '../../../../apis/apiProduct';
 import { StarFilled, UserOutlined } from '@ant-design/icons';
 import TextArea from 'antd/es/input/TextArea';
+import store from '../../../../stores';
+import { updateCartItems } from '../../../../stores/actions/actionCart';
 
 const settings = {
     dots: false,
@@ -17,30 +19,11 @@ const settings = {
     slidesToScroll: 1,
 };
 
-
-const images: any[] = [
-    { value: "https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100/https://cdn.tgdd.vn/Products/Images/42/251192/s16/iphone_14_pro_max_pdp_position-1_deep_purple_color-0-650x650.jpg" },
-    { value: "https://s3.amazonaws.com/static.neostack.com/img/react-slick/abstract02.jpg" },
-    { value: "https://s3.amazonaws.com/static.neostack.com/img/react-slick/abstract03.jpg" },
-    { value: "https://s3.amazonaws.com/static.neostack.com/img/react-slick/abstract03.jpg" },
-    { value: "https://s3.amazonaws.com/static.neostack.com/img/react-slick/abstract03.jpg" },
-    { value: "https://s3.amazonaws.com/static.neostack.com/img/react-slick/abstract03.jpg" },
-    { value: "https://s3.amazonaws.com/static.neostack.com/img/react-slick/abstract03.jpg" },
-    { value: "https://s3.amazonaws.com/static.neostack.com/img/react-slick/abstract03.jpg" }
-]
-
-
 const ProductDetailComponent = () => {
-    const [previewImage, setPreviewImage] = useState(images[0])
-    const handleClick = (i: any) => {
-        console.log(i);
-        setPreviewImage(images[i])
-    }
-
     const { id } = useParams()
-
-    const [product, setProduct] = useState([])
-
+    const [product, setProduct] = useState<any>([])
+    const [images, setImages] = useState<any[]>([])
+    const [previewImage, setPreviewImage] = useState()
     useEffect(() => {
         fetchProducts()
     }, [])
@@ -50,13 +33,26 @@ const ProductDetailComponent = () => {
         if (res.status === 200) {
             setProduct(res.data.products)
         }
+        // console.log(res.data.products);
+        res.data.products.map((el: any) => {
+            if (el._id == id) {
+                setImages(el.images)
+                setPreviewImage((el.images)[0])
+            }
+        })
     }
 
     const filterData = product.filter((el: any) => el._id == id)
     // console.log(filterData);
 
+    // const totalRatings = filterData.flatMap((el: any) => el.totalRatings)
+    const totalRatings = product.find((el: any) => el._id == id)?.totalRatings
+
+    const handleClick = (i: any) => {
+        setPreviewImage(images[i])
+    }
+
     const dataRatings = filterData.flatMap((el: any) => el.ratings)
-    // console.log(dataRatings);
 
     const [form] = Form.useForm();
 
@@ -84,12 +80,11 @@ const ProductDetailComponent = () => {
     } else {
         listCartLocalStorage = []
     }
-    console.log(listCartLocalStorage);
+    // console.log(listCartLocalStorage);
 
 
     const [listCart, setListCart] = useState<any[]>(listCartLocalStorage)
 
-    const navigate = useNavigate()
     const handleAddCart = (el: any) => {
         console.log(typeof (listCart));
         const quantity = 1
@@ -109,14 +104,23 @@ const ProductDetailComponent = () => {
             })
             localStorage.setItem('listCart', JSON.stringify(newList))
             setListCart(newList);
+            alert("Thêm vào giỏ hàng thành công!")
+            store.dispatch(updateCartItems(newList))
         } else {
             // false
             const newList = [...listCart, el];
             localStorage.setItem('listCart', JSON.stringify(newList))
             setListCart(newList);
+            alert("Thêm vào giỏ hàng thành công!")
+            store.dispatch(updateCartItems(newList))
         }
-        alert("Thêm vào giỏ hàng thành công!")
     }
+
+    const customSetting = {
+        ...settings,
+        slidesToShow: images.length > 3 ? 4 : images.length
+    }
+
     return (
         <div className="product-detail">
             <div className="detail">
@@ -124,16 +128,16 @@ const ProductDetailComponent = () => {
                     <Col xs={24} lg={12}>
                         <div className='slider-image'>
                             <div className='image-preview'>
-                                <img src={previewImage.value} />
+                                <img src={previewImage} />
                             </div>
-                            <Slider {...settings}>
-                                {images.map((el, i) => (
-                                    <div className='slider-item'>
+                            <Slider {...customSetting}>
+                                {images.map((el, index) => (
+                                    <div key={index} className='slider-item'>
                                         <Image
                                             className='image'
-                                            src={el.value}
+                                            src={el}
                                             preview={false}
-                                            onClick={() => handleClick(i)}
+                                            onClick={() => handleClick(index)}
                                         />
                                     </div>
                                 ))}
@@ -143,11 +147,11 @@ const ProductDetailComponent = () => {
                     <Col xs={24} lg={12}>
                         {filterData.map((el: any) => {
                             return (
-                                <div className='content'>
+                                <div key={el._id} className='content'>
                                     <div className='information'>
                                         <h3>{el.name}</h3>
                                         <span>Giá và khuyến mãi tại: Hồ Chí Minh</span>
-                                        <p>{el.price.toLocaleString("en")}</p>
+                                        <p>{el.price.toLocaleString("en")}đ</p>
                                         <div className='promotion'>
                                             <h5>Khuyến mãi</h5>
                                             <span>Giá và khuyến mãi dự kiến áp dụng đến 23:00 | 31/07</span>
@@ -188,7 +192,7 @@ const ProductDetailComponent = () => {
 
             <div className='description'>
                 {filterData.map((el: any) => (
-                    <div dangerouslySetInnerHTML={{ __html: el.description }} />
+                    <div key={el._id} dangerouslySetInnerHTML={{ __html: el.description }} />
                 ))}
             </div>
 
@@ -197,8 +201,8 @@ const ProductDetailComponent = () => {
                 <Row>
                     <Col className='review-content' xs={24} lg={8}>
                         <div className='total-rating'>
-                            <p>5.6 <StarFilled style={{ color: "#FEB700" }} /></p>
-                            <span>183 đánh giá</span>
+                            <p>{totalRatings} <StarFilled style={{ color: "#FEB700" }} /></p>
+                            <span>{dataRatings.length} đánh giá</span>
                         </div>
                         <p>Viết đánh giá của riêng bạn</p>
                         <Form
@@ -209,13 +213,18 @@ const ProductDetailComponent = () => {
                             onFinishFailed={onFinishFailed}
                             autoComplete="off"
                             style={{ paddingRight: "20px" }}
+                            initialValues={{
+                                star: 5
+                            }}
                         >
                             <Form.Item
                                 label="Chất lượng"
                                 name="star"
                                 rules={[{ required: true, message: 'Please input your star!' }]}
                             >
-                                <Rate allowHalf defaultValue={5} />
+                                <Rate
+                                    allowHalf
+                                />
                             </Form.Item>
                             <Form.Item
                                 label="Tên của bạn"
@@ -241,12 +250,12 @@ const ProductDetailComponent = () => {
                     <Col className='list-review' xs={24} lg={16}>
                         {dataRatings.map((el: any) => {
                             return (
-                                <div className='review-item'>
+                                <div key={el._id} className='review-item'>
                                     <div className='item-infor'>
                                         <Avatar size={32} icon={<UserOutlined />} />
                                         <p>{el.postedBy}</p>
                                     </div>
-                                    <Rate allowHalf value={el.star} style={{ fontSize: "14px" }} />
+                                    <Rate disabled allowHalf value={el.star} style={{ fontSize: "14px" }} />
                                     <p>{el.comment}</p>
                                 </div>
                             )

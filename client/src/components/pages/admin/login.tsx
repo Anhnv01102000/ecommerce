@@ -16,13 +16,10 @@ const LoginComponent: React.FC = () => {
             password: values.password,
         }
         const response = await login(dataForm)
-        console.log(response);
-
 
         if (response.status === 200) {
             const accessToken = response.data.accessToken;
             const refreshToken = response.data.refreshToken;
-
             localStorage.setItem("access-token", accessToken);
             localStorage.setItem("refresh-token", refreshToken);
             alert("Đăng nhập thành công");

@@ -7,37 +7,38 @@ import { getProduct } from '../../../../apis/apiProduct';
 import { getCategory } from '../../../../apis/apiCategory';
 import { useNavigate } from "react-router-dom";
 import type { MenuProps } from 'antd';
-
+import { useSelector } from 'react-redux';
+import store from '../../../../stores';
+import { getCartItemsFromLocalStorage } from '../../../../stores/actions/actionCart';
+import { getListProduct } from '../../../../stores/actions/actionProduct';
+import { getListCategory } from '../../../../stores/actions/actionCategory';
 
 const { SubMenu } = Menu;
 
 const { Search } = Input
 
 const HomeHeaderComponent = () => {
-    const [data, setData] = useState<any[]>([])
-    const [category, setCategory] = useState<any[]>([])
+    const cartItems: any = useSelector((state: any) => state?.cartReducer?.cartItems);
+    // const cartItems = dataRedux
+    // console.log(cartItems);
+
+    const countProduct = cartItems.reduce((total, item) => total + item.quantity, 0);
+
+    const category = useSelector((state: any) => state?.categoryReducer?.categories)
+    const product = useSelector((state: any) => state?.productReducer?.products)
 
     useEffect(() => {
-        fetchProducts()
+        store.dispatch(getCartItemsFromLocalStorage())
         fetchCategories()
+        fetchProducts()
     }, [])
 
-    const fetchProducts = async () => {
-        let res = await getProduct()
-        // console.log(res.data.products);
-
-        if (res.status === 200) {
-            setData(res.data.products)
-        }
+    const fetchCategories = async () => {
+        store.dispatch(getListCategory())
     }
 
-    const fetchCategories = async () => {
-        let res = await getCategory()
-        // console.log(res.data.categories);
-
-        if (res.status === 200) {
-            setCategory(res.data.categories)
-        }
+    const fetchProducts = async () => {
+        store.dispatch(getListProduct())
     }
 
     const navigate = useNavigate();
@@ -100,21 +101,13 @@ const HomeHeaderComponent = () => {
         navigate(e.key)
     };
 
-    let listCartLocalStorage: any = localStorage.getItem('listCart')
-
-    if (listCartLocalStorage !== null) {
-        listCartLocalStorage = JSON.parse(listCartLocalStorage)
-    } else {
-        listCartLocalStorage = []
+    // Search
+    const [input, setInput] = useState('')
+    const search = () => {
+        const searchData = product.filter((el) => el.name.toLowerCase().includes(input.toLowerCase()))
+        navigate('/search', { state: { searchData } });  // Truyền searchData sang state của page search
     }
 
-    const [listCart, setListCart] = useState<any[]>(listCartLocalStorage)
-
-    let countProduct = 0;
-    for (var i = 0; i < listCart.length; i++) {
-        var item = listCart[i];
-        countProduct += item.quantity
-    }
     return (
         <div>
             <header className="header">
@@ -133,11 +126,15 @@ const HomeHeaderComponent = () => {
                             prefix={<SearchOutlined />}
                             size="middle"
                             style={{ border: "none", color: "#939ca3", outlineOffset: "none" }}
+                            onChange={(e) => setInput(e.target.value)}
+                            onPressEnter={(e) => search()}
                         />
                     </div>
                     <div className='icon'>
                         <ShoppingCartOutlined onClick={() => { navigate("/cart") }} style={{ fontSize: 28, margin: "0 30px 0 0" }} />
-                        <span className='count-product'>{countProduct}</span>
+                        <span className='count-product'>
+                            {countProduct}
+                        </span>
                         <UserOutlined style={{ fontSize: 24 }} />
                     </div>
                 </div>

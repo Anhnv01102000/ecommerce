@@ -1,3 +1,4 @@
+import React from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -45,11 +46,11 @@ interface ChildProps {
 }
 
 const SliderComponent: React.FC<ChildProps> = ({ data }) => {
-    console.log(data);
+    // console.log(data);
     return (
         <Slider {...settings}>
             {data.map(el => (
-                <div className='product-card'>
+                <div key={el._id} className='product-card'>
                     <div className='card-item'>
                         <Link className='link' to={`/product/${el._id}`}>
                             <Image

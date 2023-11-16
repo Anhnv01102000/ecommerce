@@ -1,3 +1,4 @@
+import React from "react"
 import RegisterComponent from "../../components/pages/admin/register"
 
 const Register = () => {

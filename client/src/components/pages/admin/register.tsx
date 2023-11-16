@@ -33,7 +33,7 @@ const RegisterComponent: React.FC = () => {
             password: values.password,
         }
 
-        if (data.find(el => el.email === values.email) || data.find(el => el.mobile === values.mobile)) {
+        if (data.find(el => el.email === values.email)) {
             alert("Tài khoản đã tồn tại")
         } else {
             const response = await register(dataForm)

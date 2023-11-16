@@ -1,58 +1,50 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import "./style.scss"
 import { Link, useNavigate } from 'react-router-dom';
 import { LeftOutlined } from "@ant-design/icons"
 import { Col, Row, Image, InputNumber, Form, Input, Space, Button } from 'antd';
-import { createOrder } from '../../../../apis/apiOrder';
+import { createNewOrder } from '../../../../apis/apiOrder';
+import { updateCartItems } from '../../../../stores/actions/actionCart';
+import store from '../../../../stores';
+import { useSelector } from 'react-redux'
 
 
 const CartComponent = () => {
     const navigate = useNavigate()
     const [form] = Form.useForm();
-    const [listCart, setListCart] = useState<any>([])
 
-    let cart: any = localStorage.getItem('listCart')
+    const cartItems = useSelector((state: any) => state.cartReducer.cartItems);
 
-    const fetchCart = () => {
-        if (cart !== null) {
-            setListCart(JSON.parse(cart))
-        } else {
-            setListCart([])
-        }
-    }
-
-    useEffect(() => {
-        fetchCart()
-    }, [cart])
-
-    // console.log(listCart);
-
-    const updateCart = (index: any, value: any) => {
-        const updateListCart = [...listCart]
-        updateListCart[index].quantity = value
-        setListCart(updateListCart)
+    const updateCart = (index: any, quantity: any) => {
+        const updateListCart = [...cartItems]
+        // updateListCart[index].quantity = quantity
+        updateListCart[index] = {
+            ...updateListCart[index], // Tạo bản sao mới của phần tử trong mảng
+            quantity: quantity, // Thay đổi thuộc tính quantity của phần tử
+        };
         localStorage.setItem('listCart', JSON.stringify(updateListCart))
+        store.dispatch(updateCartItems(updateListCart))
     };
 
     const handleDelete = (index: any) => {
-        const deleteListCart = [...listCart];
+        const deleteListCart = [...cartItems];
         deleteListCart.splice(index, 1);
-        setListCart(deleteListCart);
         localStorage.setItem('listCart', JSON.stringify(deleteListCart))
+        store.dispatch(updateCartItems(deleteListCart))
     }
 
 
     let totalAmount = 0;
     let countProduct = 0;
-    for (var i = 0; i < listCart.length; i++) {
-        var item = listCart[i];
-        var price = item.price;
-        var quantity = item.quantity;
+    for (let i = 0; i < cartItems.length; i++) {
+        const item = cartItems[i];
+        const price = item.price;
+        const quantity = item.quantity;
         totalAmount += price * quantity;
         countProduct += item.quantity
     }
 
-    const products = listCart.map((el: any) => ({ product: el.name, quantity: el.quantity }))
+    const products = cartItems.map((el: any) => ({ product: el.name, quantity: el.quantity }))
 
     const onFinish = async (values: any) => {
         const orderBy = [
@@ -68,9 +60,10 @@ const CartComponent = () => {
             orderBy: orderBy
         }
 
-        const response = await createOrder(dataForm)
+        const response = await createNewOrder(dataForm)
         if (response.status === 200) {
             localStorage.removeItem('listCart');
+            store.dispatch(updateCartItems([]))
             navigate("/success")
         }
     };
@@ -87,8 +80,8 @@ const CartComponent = () => {
                         <Link className='top-content' to="/"><LeftOutlined /> Mua thêm sản phẩm khác</Link>
                         <div className='middle-content'>
                             <Row className='cart-item' gutter={[32, 32]}>
-                                {listCart.map((el: any, index: any) => (
-                                    <>
+                                {cartItems.map((el: any, index: any) => (
+                                    <Fragment key={index}>
                                         <Col span={2} style={{ display: "flex", alignItems: "center" }}>
                                             <Button
                                                 size='small'
@@ -106,21 +99,22 @@ const CartComponent = () => {
                                         <Col span={18} style={{ display: "flex", justifyContent: "space-between" }}>
                                             <div>
                                                 <p>{el.name}</p>
-                                                <p>Số lượng:
+                                                <div>Số lượng:
                                                     <InputNumber
                                                         size='small'
                                                         min={1}
                                                         max={10}
-                                                        defaultValue={el.quantity}
-                                                        onChange={(value) => updateCart(index, value)} />
-                                                </p>
+                                                        value={el.quantity}
+                                                        onChange={(quantity) => updateCart(index, quantity)}
+                                                    />
+                                                </div>
                                             </div>
                                             <div style={{ textAlign: "center" }}>
                                                 <p>Giá sản phẩm</p>
                                                 <p>{el.price.toLocaleString("en")}đ</p>
                                             </div>
                                         </Col>
-                                    </>
+                                    </Fragment>
                                 ))}
                                 <Col span={18} style={{ textAlign: "center" }}>
                                     <p>Tạm tính ({countProduct} sản phẩm): </p>

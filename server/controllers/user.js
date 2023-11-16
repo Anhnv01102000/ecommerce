@@ -58,15 +58,6 @@ const login = asyncHandler(async (req, res) => {
     }
 })
 
-const getCurrent = asyncHandler(async (req, res) => {
-    const { id } = req.user
-    const user = await User.findById(id).select(' -refreshToken -password -role')
-    return res.status(200).json({
-        success: user ? true : false,
-        response: user ? user : "User not found"
-    })
-})
-
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const { refreshToken } = req.body
     // console.log(refreshToken);
@@ -77,15 +68,16 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     // console.log(response);
     return res.status(200).json({
         success: response ? true : false,
-        newAccessToken: response ? gennerateAccessToken(response._id, response.role) : "Refresh Token not matched"
+        newAccessToken: response ? gennerateAccessToken(response._id) : "Refresh Token not matched",
+        newRefreshToken: response ? gennerateRefreshToken(response._id) : "RefreshTokenfail"
     })
-
 })
 
 const logout = asyncHandler(async (req, res) => {
     const { refreshToken } = req.body
+    console.log(refreshToken);
     if (!refreshToken) {
-        throw new Error("No fresh token")
+        throw new Error("No refresh token")
     } else {
         // Xóa refresh token ở db
         await User.findOneAndUpdate({ refreshToken }, { refreshToken: "" }, { new: true })
@@ -259,7 +251,6 @@ const updateUser = asyncHandler(async (req, res) => {
 module.exports = {
     Register,
     login,
-    getCurrent,
     refreshAccessToken,
     logout,
     forgotPassword,

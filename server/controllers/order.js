@@ -7,7 +7,7 @@ const createOrder = asyncHandler(async (req, res) => {
     const response = await Order.create(req.body)
     return res.status(200).json({
         success: response ? true : false,
-        response: response ? response : "Something went wrong",
+        createOrder: response ? response : "Something went wrong",
     })
 })
 
@@ -15,7 +15,7 @@ const getOrder = asyncHandler(async (req, res) => {
     const response = await Order.find()
     return res.status(200).json({
         success: response ? true : false,
-        order: response ? response : "Something went wrong"
+        orders: response ? response : "Something went wrong"
     })
 })
 

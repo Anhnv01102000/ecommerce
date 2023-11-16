@@ -5,26 +5,19 @@ const getProduct = () => {
 }
 
 const createNewProduct = (dataForm: any) => {
-    const token = localStorage.getItem("access-token")
-    // console.log(token);
-    return axios.post('product/', dataForm, { headers: { "Authorization": `Bearer ${token}` } })
+    return axios.post('product/', dataForm)
 }
 
 const editProduct = (id: String, dataForm: any) => {
-    const token = localStorage.getItem("access-token")
-    // console.log(token);
-    return axios.put(`product/${id}`, dataForm, { headers: { "Authorization": `Bearer ${token}` } })
+    return axios.put(`product/${id}`, dataForm)
 }
 
 const deleteProduct = (id: String) => {
-    const token = localStorage.getItem("access-token")
-    // console.log(token);
-    return axios.delete(`product/${id}`, { headers: { "Authorization": `Bearer ${token}` } })
+    return axios.delete(`product/${id}`)
 }
 
 const ratings = (dataForm: any) => {
-    const token = localStorage.getItem("access-token")
-    return axios.put(`product/ratings`, dataForm, { headers: { "Authorization": `Bearer ${token}` } })
+    return axios.put(`product/ratings`, dataForm)
 }
 
 export { createNewProduct, getProduct, editProduct, deleteProduct, ratings }

@@ -3,17 +3,12 @@ const ctrls = require('../controllers/product')
 const { verifyAccessToken } = require('../middlewares/verifyToken')
 const upload = require('../configs/cloudinary.config')
 
-router.post('/', [verifyAccessToken], upload.fields([
-    { name: "images", maxCount: 10 }
-]), ctrls.createProduct)
+router.post('/', [verifyAccessToken], ctrls.createProduct)
 router.get('/', ctrls.getAllProduct)
-router.put('/ratings', [verifyAccessToken], ctrls.ratings)
-router.get('/:pid', ctrls.getProduct)
-router.post('/uploadimage', upload.array("images", 10), ctrls.uploadImagesProduct)
+router.put('/ratings', ctrls.ratings)
+router.post('/uploadimage', upload.fields([{ name: "images", maxCount: 10 }]), ctrls.uploadImagesProduct)
 
-router.put('/:pid', [verifyAccessToken], upload.fields([
-    { name: "images", maxCount: 10 }
-]), ctrls.updateProduct)
+router.put('/:pid', [verifyAccessToken], ctrls.updateProduct)
 
 router.delete('/:pid', [verifyAccessToken], ctrls.deleteProduct)
 

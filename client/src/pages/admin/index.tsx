@@ -1,14 +1,15 @@
+import React from "react";
 import Auth from "../../auth";
 import Layouts from "../../components/layouts/admin";
 import AdminComponent from "../../components/pages/admin/admin";
 
 const AdminPage = () => {
     return (
-        <Auth>
-            <Layouts>
+        <Layouts>
+            <Auth>
                 <AdminComponent />
-            </Layouts>
-        </Auth>
+            </Auth>
+        </Layouts>
     )
 }
 

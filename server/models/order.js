@@ -12,7 +12,7 @@ var orderSchema = new mongoose.Schema({
     orderBy: [
         {
             name: { type: String },
-            phone: { type: Number },
+            phone: { type: String },
             address: { type: String }
         }
     ]

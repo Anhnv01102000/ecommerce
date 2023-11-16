@@ -1,3 +1,4 @@
+import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminPage from "../pages/admin";
 import Error from "../pages/error";
@@ -18,6 +19,9 @@ import Register from "../pages/admin/register";
 import ProductDetailPage from "../pages/home/ProductDetail";
 import CartPage from "../pages/home/Cart";
 import SuccessPage from "../pages/home/Success";
+import Auth from "../auth";
+import SearchPage from "../pages/home/Search";
+import ListProductComponent from "../components/pages/home/ListProductComponent";
 
 
 const BrowerRouter = () => {
@@ -46,6 +50,8 @@ const BrowerRouter = () => {
                 <Route path='/product/:id' element={<ProductDetailPage />} />
                 <Route path='/cart' element={<CartPage />} />
                 <Route path='/success' element={<SuccessPage />} />
+                <Route path='/search' element={<SearchPage />} />
+
                 {/* lỗi không tồn tại trang */}
                 <Route path="*" element={<Error />} />
                 {/* Auth */}

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, Modal, Space, Table, Upload, Select } from 'antd';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { Button, Form, Input, Modal, Space, Table, Upload, Select, Rate, UploadFile } from 'antd';
 import { PlusOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Image } from 'antd';
@@ -7,7 +7,12 @@ import { getProduct, createNewProduct, editProduct, deleteProduct } from '../../
 import { getCategory } from '../../../apis/apiCategory';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-
+import { Alignment } from '@ckeditor/ckeditor5-alignment';
+import { DecoupledEditor } from '@ckeditor/ckeditor5-editor-decoupled';
+import { useSelector } from "react-redux";
+import store from '../../../stores';
+import { getListProduct, createProduct, editProduct1, deleteProduct1 } from '../../../stores/actions/actionProduct';
+import { getListCategory } from '../../../stores/actions/actionCategory';
 
 enum STATUS {
     EDIT,
@@ -15,24 +20,28 @@ enum STATUS {
 }
 
 const normFile = (e: any) => {
-    console.log('event: ', e);
+    console.log('event: ', e.fileList);
 
     if (Array.isArray(e)) {
         return e;
     }
-    return e?.fileList;
+    console.log(e?.fileList.map((el: any) => el?.response?.files));
+    return e?.fileList.flatMap((el: any) => el?.response?.files)
 };
+
 
 const TableProduct: React.FC = () => {
     interface DataType {
         key: React.Key;
         name: string;
-        age: number;
-        address: string;
+        price: number;
+        category: string;
+        totalRatings: number;
     }
 
-    const [product, setProduct] = useState<DataType[]>([])
-    const [category, setCategory] = useState<any[]>([])
+    const isLoading = useSelector((state: any) => state?.productReducer?.loading)
+    const product: DataType[] = useSelector((state: any) => state?.productReducer?.products)
+    const category = useSelector((state: any) => state?.categoryReducer?.categories)
 
     useEffect(() => {
         fetchProducts()
@@ -40,30 +49,32 @@ const TableProduct: React.FC = () => {
     }, [])
 
     const fetchProducts = async () => {
-        let res = await getProduct()
-        console.log(res.data.products);
-
-        if (res.status === 200) {
-            setProduct(res.data.products)
-        }
+        store.dispatch(getListProduct())
+        // let res = await getProduct()
+        // console.log(res.data.products);
+        // if (res.status === 200) {
+        //     setProduct(res.data.products)
+        // }
     }
 
     const fetchCategories = async () => {
-        let res = await getCategory()
+        store.dispatch(getListCategory())
+        // let res = await getCategory()
         // console.log(res.data.categories);
-
-        if (res.status === 200) {
-            setCategory(res.data.categories)
-        }
+        // if (res.status === 200) {
+        //     setCategory(res.data.categories)
+        // }
     }
 
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [status, setStatus] = useState(STATUS.CREATE)
+    const [description, setDescription] = useState('')
 
     const openCreateModal = () => {
         setIsModalOpen(true);
         setStatus(STATUS.CREATE);
+        setDescription("")
         form.resetFields();
     };
 
@@ -77,37 +88,11 @@ const TableProduct: React.FC = () => {
 
     const [form] = Form.useForm();
 
-    const handleEditRow = (record: any) => {
-        setStatus(STATUS.EDIT);
-        console.log(record);
-        form.setFieldsValue(record);
-        setIsModalOpen(true);
-    }
-
-    const [description, setDescription] = useState('')
-
-
-    const { confirm } = Modal;
-
-    const showConfirm = (record: any) => {
-        confirm({
-            title: 'Do you Want to delete these items?',
-            icon: <ExclamationCircleFilled />,
-            async onOk() {
-                const response = await deleteProduct(record._id)
-                if (response.status === 200) {
-                    fetchProducts();
-                }
-            },
-            onCancel() {
-                console.log('Cancel');
-            },
-        });
-    };
+    // console.log(form.getFieldValue("images"));
 
     const getCategoryName = (categoryId: any) => {
-        const foundCategory = category.find((cat: any) => cat._id === categoryId);
-        return foundCategory ? foundCategory.name : 'Unknown';
+        const findCategory = category.find((cat: any) => cat._id === categoryId);
+        return findCategory ? findCategory.name : 'Unknown';
     };
 
     const columns: ColumnsType<DataType> = [
@@ -123,32 +108,53 @@ const TableProduct: React.FC = () => {
             dataIndex: 'name',
             key: 'name',
             fixed: 'left',
+            align: "center"
         },
         {
             title: 'Ảnh sản phẩm',
             dataIndex: "images",
-            render: images => <Image src={images[0]} preview={true} />,
             key: 'images',
-            width: 120
+            width: 120,
+            align: "center",
+            render: images => <Image src={images[0]} preview={true} />
         },
         {
             title: 'Giá',
             dataIndex: 'price',
             key: 'price',
+            align: "center",
             render: price => {
                 return price.toLocaleString("en") + "đ";
-            }
+            },
+            sorter: (a, b) => a.price - b.price
         },
         {
             title: 'Danh mục',
             dataIndex: 'category',
             key: 'category',
+            align: "center",
             render: categoryId => getCategoryName(categoryId),
+            filters:
+                category.map(el => (
+                    {
+                        text: el.name,
+                        value: el._id
+                    }
+                )),
+            onFilter: (value: any, record: any) => (record.category.indexOf(value) === 0),
+        },
+        {
+            title: 'Đánh giá',
+            dataIndex: 'totalRatings',
+            key: 'totalRatings',
+            align: "center",
+            render: totalRatings => (<Rate allowHalf value={totalRatings} disabled style={{ fontSize: "15px" }} />)
         },
         {
             title: 'Ngày tạo',
             dataIndex: 'createdAt',
             key: 'createdAt',
+            align: "center",
             render: createdAt => (new Date(createdAt).toLocaleDateString("en-GB")),
         },
         {
@@ -156,6 +162,7 @@ const TableProduct: React.FC = () => {
             key: 'action',
             fixed: 'right',
             width: 180,
+            align: "center",
             render: (_, record) => (
                 <Space size={'large'}>
                     <Button onClick={() => handleEditRow(record)}>Edit</Button>
@@ -174,32 +181,31 @@ const TableProduct: React.FC = () => {
     }
 
     const onFinish = async (values: any) => {
-        console.log(values);
+        const images = await values?.dataImage
 
-        const dataForm = new FormData()
-        dataForm.append("name", values.name)
-        dataForm.append("price", values.price)
-        dataForm.append("description", description)
-        dataForm.append("category", values.category)
-        // dataForm.append("images", values.images[0].originFileObj)
-        // dataForm.append("images", values.images.map((el: any) => el.originFileObj))
+        const dataForm = {
+            name: values.name,
+            price: values.price,
+            description: description,
+            category: values.category,
+            images: images
+        }
 
-        values.images.map((el: any) => (
-            dataForm.append("images", el.originFileObj)
-        ))
-
+        console.log(dataForm);
 
         if (status === STATUS.CREATE) {
-            const response = await createNewProduct(dataForm)
-            console.log(response);
-            if (response.status === 200) {
-                fetchProducts();
-            }
+            // const response = await createNewProduct(dataForm)
+            // console.log(response);
+            // if (response.status === 200) {
+            //     fetchProducts();
+            // }
+            store.dispatch(createProduct(dataForm))
         } else {
-            const response = await editProduct(values._id, dataForm)
-            if (response.status === 200) {
-                fetchProducts();
-            }
+            // const response = await editProduct(values._id, dataForm)
+            // if (response.status === 200) {
+            //     fetchProducts();
+            // }
+            store.dispatch(editProduct1(values._id, dataForm))
         }
     };
 
@@ -209,6 +215,44 @@ const TableProduct: React.FC = () => {
 
     const onReset = () => {
         form.resetFields();
+    };
+
+
+    const handleEditRow = (record: any) => {
+        // console.log(record);
+        setStatus(STATUS.EDIT);
+        // record.images = record.images.map(
+        //     (el, index) => ({
+        //         uid: index,
+        //         name: el,
+        //         status: 'done',
+        //         url: el,
+        //     })
+        // )
+        // console.log(record);
+        setDescription(record.description);
+        form.setFieldsValue(record);
+        setIsModalOpen(true);
+    }
+
+
+    const { confirm } = Modal;
+
+    const showConfirm = (record: any) => {
+        confirm({
+            title: 'Do you Want to delete these items?',
+            icon: <ExclamationCircleFilled />,
+            async onOk() {
+                // const response = await deleteProduct(record._id)
+                // if (response.status === 200) {
+                //     fetchProducts();
+                // }
+                store.dispatch(deleteProduct1(record._id))
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
     };
 
     return (
@@ -255,7 +299,7 @@ const TableProduct: React.FC = () => {
                     <Form.Item name="category" label="Category">
                         <Select placeholder="Please select a category">
                             {category.map((el: any) => (
-                                <Select.Option value={el._id}>{el.name}</Select.Option>
+                                <Select.Option key={el._id} value={el._id}>{el.name}</Select.Option>
                             ))}
                         </Select>
                     </Form.Item>
@@ -271,7 +315,7 @@ const TableProduct: React.FC = () => {
                         />
                     </Form.Item>
                     <Form.Item
-                        name="images"
+                        name="dataImage"
                         label="Ảnh sản phẩm"
                         valuePropName="images"
                         getValueFromEvent={normFile}
@@ -281,6 +325,7 @@ const TableProduct: React.FC = () => {
                             name='images'
                             listType="picture-card"
                             multiple
+                        // fileList={form.getFieldValue("images")}
                         >
                             <div>
                                 <PlusOutlined />
@@ -290,7 +335,12 @@ const TableProduct: React.FC = () => {
                     </Form.Item>
                     <Form.Item >
                         <Space size={'small'}>
-                            <Button onClick={() => setIsModalOpen(false)} type="primary" htmlType="submit">
+                            <Button
+                                onClick={() => setIsModalOpen(false)}
+                                type="primary"
+                                htmlType="submit"
+                                loading={isLoading}
+                            >
                                 Submit
                             </Button>
                             <Button type="primary" htmlType="button" onClick={onReset} danger>
@@ -301,10 +351,13 @@ const TableProduct: React.FC = () => {
                 </Form>
             </Modal >
             <Table
+                rowKey={"_id"}
                 columns={columns}
                 dataSource={filterData()}
                 scroll={{ x: 1000 }}
+                bordered
                 pagination={{ defaultPageSize: 3, showSizeChanger: true, pageSizeOptions: ['3', '5', '10'] }}
+                loading={isLoading}
             />
         </>
     )
